@@ -1,0 +1,53 @@
+**Activar en modo Servidor**
+! 1. Entrar al modo de configuración
+configure terminal
+
+! 2. Configurar el dominio VTP
+vtp domain RedCorporativa
+
+! 3. Configurar la contraseña VTP
+vtp password ClaveSegura123
+
+! 4. Definir la versión de VTP
+vtp version 2
+
+! 5. Configurar el modo como Servidor
+vtp mode server
+
+! 6. Configurar el enlace troncal hacia el cliente (Ejemplo: puerto GigabitEthernet0/1)
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ no shutdown
+end
+
+! 7. Guardar los cambios
+copy run start
+
+**Activar en modo Cliente**
+
+! 1. Entrar al modo de configuración
+configure terminal
+
+! 2. Configurar el MISMO dominio VTP
+vtp domain RedCorporativa
+
+! 3. Configurar la MISMA contraseña VTP
+vtp password ClaveSegura123
+
+! 4. Definir la MISMA versión de VTP
+vtp version 2
+
+! 5. Configurar el modo como Cliente
+vtp mode client
+
+! 6. Configurar el enlace troncal hacia el servidor (Ejemplo: puerto GigabitEthernet0/1)
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ no shutdown
+end
+
+! 7. Guardar los cambios
+copy run start
+

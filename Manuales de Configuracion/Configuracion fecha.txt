@@ -1,0 +1,9 @@
+Estando en privilegiado
+sh clock #
+clock set [hh:mm:ss] [month en letras] [day] [year]
+guardar
+
+Estando en global
+clock # (manual)
+clock source [sntp|browser] (automatico)
+guardar

@@ -1,0 +1,131 @@
+*Crear VLAN*
+S1(config)# vlan 10
+S1(config-vlan)# name LAN10
+S1(config-vlan)# exit
+S1(config)# vlan 20
+S1(config-vlan)# name LAN20
+S1(config-vlan)# exit
+S1(config)# vlan 99
+S1(config-vlan)# name Management
+S1(config-vlan)# exit
+S1(config)#
+
+
+*Crear Interfaz de administracion SVI*
+S1(config)# interface vlan 99
+S1(config-if)# ip add 192.168.99.2 255.255.255.0
+S1(config-if)# no shut
+S1(config-if)# exit
+S1(config)# ip default-gateway 192.168.99.1
+S1(config)#
+
+*Configurar puertos de acceso*
+S1(config)# interface fa0/6
+S1(config-if)# switchport mode access
+S1(config-if)# switchport access vlan 10
+S1(config-if)# no shut
+S1(config-if)# exit
+S1(config)#
+
+*Configurar puertos de enlace troncal*
+S1(config)# interface fa0/1
+S1(config-if)# switchport mode trunk
+S1(config-if)# no shut
+S1(config-if)# exit
+S1(config)# interface fa0/5
+S1(config-if)# switchport mode trunk
+S1(config-if)# no shut
+S1(config-if)# end
+
+*Configuracion de enlaces tronkales*
+S2(config)# vlan 20
+S2(config-vlan)# name LAN20
+S2(config-if)# switchport mode access
+S2(config-if)# switchport access vlan 20
+
+
+*Configuracion de interfaces*
+R1(config)# interface G0/0/1.10
+R1(config-subif)# description Default Gateway for VLAN 10
+R1(config-subif)# encapsulation dot1Q 10
+R1(config-subif)# ip add 192.168.10.1 255.255.255.0
+R1(config-subif)# exit
+
+
+*CREAR INTERFACES VLAN SVI*
+D1(config)# interface vlan 10
+D1(config-if)# description Default Gateway SVI for 192.168.10.0/24
+D1(config-if)# ip add 192.168.10.1 255.255.255.0
+D1(config-if)# no shut
+D1(config-if)# exit
+D1(config)#
+D1(config)# int vlan 20
+D1(config-if)# description Default Gateway SVI for 192.168.20.0/24
+D1(config-if)# ip add 192.168.20.1 255.255.255.0
+D1(config-if)# no shut
+D1(config-if)# exit
+
+*Habilitar enrutamiento en switch capa 3*
+ip routing
+ipv6 unicast-routing
+
+*Etiquetar como confiable el trafico de voz*
+S3(config-if)# mls qos trust cos
+
+*Configurar vlan de voz y datos*
+S3(config)# vlan 20
+S3(config-vlan)# name student
+S3(config-vlan)# vlan 150
+S3(config-vlan)# name VOICE
+S3(config-vlan)# exit
+S3(config)# interface fa0/18
+S3(config-if)# switchport mode access
+S3(config-if)# switchport access vlan 20
+S3(config-if)# mls qos trust cos
+S3(config-if)# switchport voice vlan 150
+S3(config-if)# end
+
+*Activar VLAN de forma nativa*
+switchport trunk native vlan NUMERO
+
+*Verificar VLAN*
+sh vlan 
+
+*Verificar interfaces trunk y access respectivamente*
+sh interfaces trunk
+sh interfaces access
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

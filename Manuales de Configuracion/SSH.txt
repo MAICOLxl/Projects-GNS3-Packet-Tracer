@@ -1,0 +1,38 @@
+*Usar SSH cmd*
+ssh -l usuario ip (esta ip sera la que tiene puesta la sub interfaz)
+ej: 
+interface Vlan99
+ip address 10.0.102.2 255.255.255.0 
+ip default-gateway 10.0.102.1
+
+Vas a poner en cmd 10.0.102.2
+
+Tener mi gateway en sw funcionando 
+
+*Verificar SSH*
+S1#  show ip ssh
+
+*Configurar dominio*
+S1(config)# ip domain-name cisco.com
+
+*Generar par de claves RSA*
+S1(config)# crypto key generate rsa
+How many bits in the modulus [512]: 1024
+
+*Crear el usuario/Configurar autenticacion de usuarios*
+S1(config)# username NOMBRE secret CCNA
+
+*Configurar las lineas vty*
+S1(config)# line vty 0 15
+S1(config-line)# transport input ssh
+S1(config-line)# login local
+S1(config-line)# salida
+
+*Habilitar SSH version 2*
+S1(config)# ip ssh version 2
+
+*No buscar dominio DNS*
+Router(config)# no ip domain-lookup
+
+*Direccion ipv6 de enlace local EJ: fe80::2*EN LA INTERFAZ
+ipv6 address fe80::2 link-local

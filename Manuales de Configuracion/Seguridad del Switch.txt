@@ -1,0 +1,145 @@
+*Habilitar la seguridad del puerto*
+S1(config)# interface f0/1
+S1(config-if)# switchport port-security
+Command rejected: FastEthernet0/1 is a dynamic port.
+S1(config-if)# switchport mode access
+S1(config-if)# switchport port-security
+S1(config-if)# end
+OJO: SOLO SE CONFIGURAN ENLACES ACCESS O TRUNK CON VLAN ESPECIFICAS.
+
+*Verificar la seguridad del puerto*
+S1# show port-security interface f0/1
+
+*Configuracion de otras funciones al activar port security*
+S1(config-if)# switchport port-security ?
+  aging        Port-security aging commands
+  mac-address  Secure mac address
+  maximum      Max secure addresses
+  violation    Security violation mode 
+
+*Limitar el numero maximo de direcciones MAC permitidas*
+Switch(config-if)# switchport port-security maximum VALOR
+
+*Notificacion de violaciones. restrict' descarta tramas, loguea y envía alerta sin apagar el puerto*
+S1(config)#interface fastethernet 0/1
+S1(config)#switchport mode access
+S1(config)#switchport port-security
+S1(config-interface)#switchport port-security violation restrict
+S1(config-interface)switchport port-security aging time 10
+S1(config-interface)switchport port-security mac-address sticky
+
+*DHCP Snooping y DAI*
+Sw-A(config)# ip dhcp snooping
+Sw-A(config)# ip dhcp snooping vlan 10,999
+Sw-A(config)# interface range f0/1 - 5
+Sw-A(config-if-range)# ip dhcp snooping limit rate 5
+
+Sw-A(config)# interface g0/1
+Sw-A(config-if)# ip dhcp snooping trust
+Sw-A(config)# ip arp inspection vlan 10,999
+Sw-A(config-if)# ip arp inspection trust
+
+*STP y puertos no usados*
+Sw-A(config)# interface range f0/1 - 5
+Sw-A(config-if-range)# spanning-tree portfast
+Sw-A(config-if-range)# spanning-tree bpduguard enable
+Sw-A(config)# interface range f0/6 - 24 , g0/2
+Sw-A(config-if-range)# switchport access vlan 999
+Sw-A(config-if-range)# shutdown
+
+*Saber el maximo de direcciones en un puerto*
+S1(config-if)# switchport port-security maximum ?
+
+El valor predeterminado de port security es 1. EL numero maximo de direcciones MAC seguras 
+que se puede configurar depende del switch y el IOS. En este ejemplo, el maximo es 8192.
+
+*Configuracion manual de direccion MAC*
+Switch(config-if)# switchport port-security mac-address direccion MAC
+
+*Configuracion Automatica de direcciones MAC*
+Switch(config-if)# switchport port-security mac-address sticky 
+
+*Vencimiento de la seguridad de puertos por tiempo*
+interface range fa0/1
+ switchport port-security aging time 10
+ switchport port-security aging type absolute
+
+*ROUTER R-B-10*
+# --- Subinterfaz y DHCP ---
+R-B-10(config)# interface g0/0.10
+R-B-10(config-subif)# encapsulation dot1Q 10
+R-B-10(config-subif)# ip address [IP_TABLA] [MASCARA]
+
+R-B-10(config)# ip dhcp pool WLAN-hosta
+R-B-10(dhcp-config)# network 192.168.10.0 255.255.255.0
+R-B-10(dhcp-config)# default-router [IP_GW]
+R-B-10(dhcp-config)# dns-server [IP_DNS]
+
+# --- Interfaz como Cliente DHCP ---
+R-B-10(config)# interface [INTERFAZ_HACIA_EDGE]
+R-B-10(config-if)# ip address dhcp
+
+# --- Rutas Estáticas IPv4 e IPv6 ---
+R-1-A(config)# ip route 0.0.0.0 0.0.0.0 [INTERFAZ_ETH]
+R-1-A(config)# ip route 0.0.0.0 0.0.0.0 [INTERFAZ_SERIAL] 10
+
+R-1-A(config)# ipv6 unicast-routing
+R-1-A(config)# ipv6 route ::/0 [IP_SALTO_ETH]
+R-1-A(config)# ipv6 route ::/0 [IP_SALTO_SER] 10
+
+# --- Rutas de Host (/32 o /128) ---
+R-1-A(config)# ip route [IP_SERVER] 255.255.255.255 [INTERFAZ_SALIDA]
+R-1-A(config)# ipv6 route [IP_SERVER_V6]/128 [IP_SALTO_V6]
+
+# --- Habilitar Enrutamiento IPv6 ---
+R-B-10(config)# ipv6 unicast-routing
+
+# --- Rutas IPv4 (Usando interfaz de salida como pide el ejercicio) ---
+# Ruta primaria por Ethernet
+R-B-10(config)# ip route 0.0.0.0 0.0.0.0 [Interfaz_Ethernet]
+# Ruta de respaldo por Serial (AD 10)
+R-B-10(config)# ip route 0.0.0.0 0.0.0.0 [Interfaz_Serial] 10
+
+# --- Rutas IPv6 (Usando dirección de siguiente salto como pide el ejercicio) ---
+# Ruta primaria por Ethernet
+R-B-10(config)# ipv6 route ::/0 [IP_Siguiente_Salto_Ethernet]
+# Ruta de respaldo por Serial (AD 10)
+R-B-10(config)# ipv6 route ::/0 [IP_Siguiente_Salto_Serial] 10
+
+# --- Configuración de Subinterfaz para VLAN 10 ---
+R-B-10(config)# interface g0/0.10
+R-B-10(config-subif)# encapsulation dot1Q 10
+R-B-10(config-subif)# ip address [IP_DE_LA_TABLA] [MASCARA]
+
+# --- Configuración del Pool DHCP para los Clientes Wireless ---
+R-B-10(config)# ip dhcp pool WLAN-hosta
+R-B-10(dhcp-config)# network [RED_VLAN_10] [MASCARA]
+R-B-10(dhcp-config)# default-router [IP_R-B-10_VLAN10]
+R-B-10(dhcp-config)# dns-server [IP_DNS]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

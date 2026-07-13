@@ -1,0 +1,70 @@
+*Configurar modo STP*
+S1(config)# spanning-tree mode pvst       
+S1(config)# spanning-tree mode rapid-pvst  
+S1(config)# spanning-tree mode mst 
+
+*Elegir Root y Secundary*
+S1(config)# spanning-tree vlan 1 root primary
+S1(config)# spanning-tree vlan 1 root secondary
+S1(config)# spanning-tree vlan 1 priority 4096 (ajuste prioridad 0-61440. aumenta c/d 4096)
+
+*Cambiar Priority*
+S1(config)#spanning-tree vlan [ID] priority 4096 o primary
+
+*Ajustar costo de puerto*
+S1(config)# interface fa0/1
+S1(config-if)# spanning-tree cost 10
+S1(config-if)# spanning-tree port-priority 128 (prioridad de puerto)
+
+*Configurar MST*
+S1(config)# spanning-tree mode mst
+S1(config)# spanning-tree mst configuration
+S1(config-mst)# name REGION1
+S1(config-mst)# revision 1
+S1(config-mst)# instance 1 vlan 1-10
+S1(config-mst)# instance 2 vlan 11-20
+S1(config-mst)# end
+S1(config)# spanning-tree mst 1 priority 4096
+
+*Habilitar portfast*
+S1(config-if)# spanning-tree portfast
+S1(config)# spanning-tree portfast default
+
+*BPDU Guard*
+S1(config-if)# spanning-tree bpduguard enable
+
+*Root Guard*
+S1(config-if)# spanning-tree guard root
+
+*Loop Guard*
+S1(config-if)# spanning-tree guard loop
+
+*Root Bridge*
+S1> enable
+S1# configure terminal
+S1(config)# spanning-tree mode rapid-pvst
+S1(config)# spanning-tree vlan 1 root primary
+S1(config)# end
+S1# show spanning-tree
+
+*Backup Guard*
+S2> enable
+S2# configure terminal
+S2(config)# spanning-tree vlan 1 root secondary
+S2(config)# end
+S2# show spanning-tree
+
+*Verificar STP*
+S1# show spanning-tree
+S1# show spanning-tree brief
+S1# show spanning-tree vlan 1
+S1# show spanning-tree summary
+S1# show running-config | include spanning-tree
+
+*Versiones STP*
+
+PVST+ : Spanning tree enabled protocol ieee
+
+Rapid PVST (RSTP): Spanning tree enabled protocol rstp
+
+MST: Spanning tree enabled protocol mstp

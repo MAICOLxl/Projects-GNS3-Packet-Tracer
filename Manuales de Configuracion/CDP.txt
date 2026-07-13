@@ -1,0 +1,9 @@
+Para descubrir un vecino es recomendable que el equipo tengo nombre
+y que actualicemos la tabla en caso de que le asignemos uno despues
+de verificar con el sh.
+
+*Ver los vecinos*
+show cdp neigbors
+
+*Actualizar tabla de cdp (nivel privilegiado)*
+clear cdp table

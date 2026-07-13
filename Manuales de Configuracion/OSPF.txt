@@ -1,0 +1,109 @@
+*Calcular costo de OSPF (Metrica)*
+Costo= rference bandwidth/interface bandwidth
+Ej:Cost = 100,000,000 bps / interface bandwidth in bps
+
+*Ajustar ancho de banda. No cambia velocidad, solo el calculo para la metrica*
+R1(config-if)# bandwidth 64 (kbps)
+
+*Ajustar ancho de banda de referencia*
+Router(config-router)# auto-cost reference-bandwidth Mbps
+auto-cost reference-bandwidth 1000 EN mbps
+auto-cost reference-bandwidth 10000 EN gbps
+
+*Colocar costo manualmente*
+R1(config)# interface g0/0/1
+R1(config-if)# ip ospf cost 30
+
+*Configurar ospf*
+router-id 1.1.1.1 EJEMPLO
+router ospf 1
+network 192.168.0.8 0.0.0.3 area 0  ! Red R3-R4
+network 192.168.0.12 0.0.0.3 area 0 ! Red R4-R5
+network 192.168.0.16 0.0.0.3 area 0 ! Red R4-R6
+
+*Configuracion explicita de router id*
+R1(config)# router ospf 10
+R1(config-router)# router-id 1.1.1.1
+R1(config-router)# end
+R1# show ip protocols | include ROUTER ID
+
+*Modificar ROUTER ID*
+R1# show ip protocols | include Router ID
+Router ID 10.10.1.1
+R1# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R1(config)# router ospf 10
+R1(config-router)# router-id 1.1.1.1
+% OSPF: Reload or use "clear ip ospf process" command, for this to take effect
+R1(config-router)# end
+
+*Refrescar OSPF*
+R1# clear ip ospf process
+Reset All OSPF processes? [no]: y 
+
+*Conexion punto a punto*
+Router(config-router)# network IP WILDCARD area 0 (Puede variar)
+
+*Habilitar OSPF por Interfaz(Otro metodo)*
+R1(config-router)# interface GigabitEthernet 0/0/0
+R1(config-if)# ip ospf 10 area 0
+R1(config-if)# interface GigabitEthernet 0/0/1
+R1(config-if)# ip ospf 10 area 0
+R1(config-if)# interface Loopback 0
+R1(config-if)# ip ospf 10 area 0
+
+*Configurar interfaces pasivas*
+R1(config)# router ospf 10
+R1(config-router)# passive-interface (colocar interfaz)
+R1(config-router)# passive-interface (colocar interfaz) loopback 0
+R1(config-router)# end
+
+*Cambiar a ospf punto a putno*
+R1(config)# interface GigabitEthernet 0/0/0
+R1(config-if)# ip ospf network point-to-point
+
+*Configurar redes OSPF mediante direcciones ip de interfaz y mask 0*
+network 10.1.1.2 0.0.0.0 area 0 (red es 10.1.1.0 /30)
+
+*Asignar prioridad en interfaz*
+R1(config)# interface GigabitEthernet 0/0/0
+R1(config-if)# ip ospf priority 255 (rango de 1-255, 0 no se convierte en DR ni BDR)
+
+*Borrar proceso ospf*
+R1# clear ip ospf process
+Reset ALL OSPF processes? [no]: y
+R1#
+
+*Activar depuracion de adyacencias*
+RA# debug ip ospf adj
+
+*Modificar intervalos OSPFv2 (Hello-Dead)*
+Router(config-if)# ip ospf hello-interval seconds
+Router(config-if)# ip ospf dead-interval seconds
+
+*Volver al tiempo predeterminado*
+Router(config-if)#no ip ospf hello-interval seconds
+Router(config-if)#no ip ospf dead-interval seconds
+
+*Propagar una ruta predeterminada en OSPF*
+R2(config)# router ospf 1
+R2(config-router)# default-information originate
+
+*Ruta estatica OSPF*
+R2(config)# interface lo1
+R2(config-if)# ip address 64.100.0.1 255.255.255.252
+R2(config-if)# exit
+R2(config)# ip route 0.0.0.0 0.0.0.0 loopback 1
+%Default route without gateway, if not a point-to-point interface, may impact performance
+R2(config)# router ospf 10
+R2(config-router)# default-information originate
+R2(config-router)# end
+
+*Comandos de verificacion*
+show ip interface brief
+show ip route
+show ip route ospf
+show ip ospf neighbor
+show ip protocols
+show ip ospf
+show ip ospf interface

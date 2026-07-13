@@ -1,0 +1,7 @@
+*Habilitar Ruteo en interfaz fisica*
+
+ip routing
+
+*Habilitar Ruteo en subinterfaz*
+
+no switchport

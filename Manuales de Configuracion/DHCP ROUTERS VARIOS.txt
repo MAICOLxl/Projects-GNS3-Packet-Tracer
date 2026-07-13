@@ -1,0 +1,18 @@
+vlan 10 en; R1,R4,R8
+
+Aunque use la misma vlan, cada router debe tener su
+propio rango.
+
+R1: 10.0.0.0 /24
+R4: 10.0.1.0 /24
+R8: 10.0.2.0 /24
+
+Despues en cada subinterfaz activar el protocolo de
+ruteo.
+
+in fast0/0.10
+ip ospf 1 area 0
+VERIFICAR EL SH IP RO
+
+Tener ip helper en el router del cliente.
+No es necesario en el router del servidor

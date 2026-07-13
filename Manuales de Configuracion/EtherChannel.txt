@@ -1,0 +1,128 @@
+*Configurar EtherChannel LACP*
+
+S1(config)# interface range FastEthernet 0/1 - 2
+S1(config-if-range)# channel-group 1 mode ACTIVE
+Creating a port-channel interface Port-channel 1
+S1(config-if-range)# exit
+S1(config)# interface port-channel 1
+S1(config-if)# switchport mode trunk
+S1(config-if)# switchport trunk allowed vlan 1,2,20
+
+*Verificar Etherchannel*
+show etherchannel summary
+
+*Verificar la configuracion de canalizacion de puerto*
+S1# show run | begin interface port-channel
+
+*Configuracion LACP*
+Active Active Sí
+Active Passive Sí
+Pasive Active Sí
+Pasive Passive No
+
+Active:Negocia
+Passive: Escucha
+
+*Configuracion PAgP*
+Desirable Desirable Sí
+Desirable Auto Sí
+Auto Desirable Sí
+Auto Auto No
+
+Desirable: Negocia
+Auto: Escucha
+
+*Mostrar informacion PortChannel*
+S1# show etherchannel port-channel
+                Channel-group listing:
+                —
+Group: 1
+----------
+                Canales de puerto en el grupo:
+                ---------------------------
+Canal de puerto: Po1 (agregador principal)
+------------
+Age of the Port-channel = 0d:01h:02m:10s
+Logical slot/port = 2/1 Number of ports = 2
+HotStandBy port = null
+Port state = Port-channel Ag-Inuse
+Protocol = LACP
+Port security = Disabled
+Load share deferral = Disabled
+Ports in the Port-channel:
+Index Load Port EC state No of bits
+------+------+------+------------------+-----------
+  0 00 Fa0/1 Active 0
+  0 00 Fa0/2 Active 0
+Time since last port bundled: 0d:00h:09m:30s Fa0/2
+
+*Estado general de la interfaz de canal de puertos*
+
+S1# show interfaces port-channel 1
+Port-channel1 is up, line protocol is up (connected)
+  Hardware is EtherChannel, address is c07b.bcc4.a981 (bia c07b.bcc4.a981)
+  MTU 1500 bytes, BW 200000 Kbit/sec, DLY 100 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+(resultado omitido)
+
+
+
+*Pautas y restricciones de la configuració de EtherChannel*
+EtherChannel tiene algunas pautas específicas que deben seguirse para evitar problemas de configuración.
+
+1) Todas las interfaces Ethernet admiten EtherChannel hasta un máximo de ocho interfaces sin necesidad de que las interfaces estén en el mismo módulo de interfaz.
+
+2) Todas las interfaces dentro de un EtherChannel deben funcionar a la misma velocidad y dúplex.
+
+3) Los enlaces EtherChannel pueden funcionar como puertos de acceso VLAN únicos o como enlaces troncales entre swithes.
+
+4) Todas las interfaces de un EtherChannel de Capa 2 deben ser miembros de la misma VLAN o configurarse como troncos.
+
+5) Si se configuran como enlaces troncal, el EtherChannel de Capa 2 debe tener la misma VLAN nativa y tener las mismas VLAN permitidas en ambos switches conectados al troncal.
+
+6) Al configurar enlaces EtherChannel, todas las interfaces deben apagarse antes de comenzar la configuración de EtherChannel. Una vez completada la configuración, los vínculos se pueden volver a habilitar.
+
+7) Después de configurar el EtherChannel, verifique que todas las interfaces estén en el estado up/up.
+
+8) Es posible configurar un EtherChannel como estático, o utilizar PAgP o LACP para negociar la conexión EtherChannel. La determinación de cómo se configura un EtherChannel es el valor del comando channel-group number mode. Los valores válidos son:
+
+active LACP siempre está habilitado
+
+LACP pasivo sólo está habilitado si se conecta otro dispositivo compatible con LACP.
+
+desirable PAgP siempre está habilitado
+
+auto PAgP sólo está habilitado si se conecta otro dispositivo compatible con PAGP.
+
+en EtherChannel está habilitado, pero sin LACP o PAgP.
+
+9) Los puertos LAN pueden formar un EtherChannel usando PAgP si los modos son compatibles. Los modos PAgP compatibles son:
+
+deseable => deseable
+
+desirable => auto
+
+Si ambas interfaces están en modo automático, no se puede formar un Etherchannel.
+
+10) Los puertosLAN pueden formar un EtherChannel usando LACP si los modos son compatibles. Los modos LACP compatibles son:
+
+active => active
+
+activo => pasivo
+
+Si ambas interfaces están en modo pasivo, un EtherChannel no puede formarse mediante LACP.
+
+11) Los númerosde grupo de canales son locales para el switch individual. Aunque esta actividad utiliza el mismo número de grupo de canales en cualquiera de los extremos de la conexión EtherChannel, no es un requisito. El grupo de canales 1 (interfaz po1) en un switch puede formar un EtherChannel con el grupo de canales 5 (interfaz po5) en otro switch.
+
+Fin del documento
+
+*Problemas comunes*
+
+Todas las interfaces dentro de un EtherChannel deben tener la misma configuración de velocidad y modo dúplex, de VLAN nativas y permitidas en los enlaces troncales, y de VLAN de acceso en los puertos de acceso. Garantizar estas configuraciones reducirá significativamente los problemas de red relacionados con EtherChannel. Entre los problemas comunes de EtherChannel se incluyen los siguientes:
+
+Los puertos asignados en el EtherChannel no son parte de la misma VLAN ni son configurados como enlace troncal. Los puertos con VLAN nativas diferentes no pueden formar un EtherChannel.
+
+La* conexión troncal se configuró en algunos de los puertos que componen el EtherChannel, pero no en todos ellos. No se recomienda que configure el modo de enlace troncal en los puertos individuales que conforman el EtherChannel. Al configurar un enlace troncal en un EtherChannel, compruebe el modo de enlace troncal en EtherChannel.
+If the allowed range of VLANs is not the same, the ports do not form an EtherChannel even when PAgP is set to the modo or auto deseable.
+Las opciones de negociación dinámica para PAgP y LACP no se encuentran configuradas de manera compatible en ambos extremos del EtherChannel.
+Nota: Es fácil confundir PAgP o LACP con DTP, ya que ambos son protocolos que se usan para automatizar el comportamiento en los enlaces troncales. PAgP y LACP se usan para la agregación de enlaces (EtherChannel). DTP se usa para automatizar la creación de enlaces troncales. Cuando se configura un enlace troncal de EtherChannel, normalmente se configura primero EtherChannel (PAgP o LACP) y después DTP.

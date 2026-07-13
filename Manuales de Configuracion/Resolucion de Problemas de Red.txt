@@ -1,0 +1,38 @@
+*Paso 1: Verificar capa fisica*
+R1# show interfaces GigabitEthernet 0/0/0
+R1# show processes cpu
+R1# show memory
+R1# show interfaces
+
+Input queue drops: En algun momento se entrego mas carga al router del que se podia procesar.
+
+Output queue drops: Se descartaron paquetes debido a la congestion de la interfaz.
+
+Input Errors: Errores CRC que puede ser problema de cableado, hardware de interfaz o incopatibilidad de duplex.
+
+Output errors: Errores de colisiones (Incompatibilidad duplex). La norma es full-duplex y la excepcion half-duplex.
+
+*Paso 2: Incompatibilidad duplex*
+
+Se recomienda usar el modo auto en velocidad y duplex. Si falla configurar manualmente.
+
+En enlaces ethernet punto a punto siempre se configuran full-duplex. Semi-duplex se encuentran en hubs.
+
+S1# show interface fa 0/20 (percatarse que ambas tengan el mismo duplex)
+
+*Paso 3: Verificar direcionamiento local*
+Verificar la tabla de direcciones de la tabla arp. En windows: arp -a
+
+Tabla de vecinos de IPv6 Windows: netsh interface ipv6 show neighbor 
+
+Verificar tabla mac: S1# show mac address-table
+
+Verificar VLAN'S 
+
+*Verificar gateway*
+Tabla de enrutamiento en R1# show ip route | include gateway|0.0.0.0
+
+Gateway of last resort is 192.168.1.2 to network 0.0.0.0 
+S* 0.0.0.0/0 [1/0] via 192.168.1.2
+
+Tabla de enrutamiento en PC: route print

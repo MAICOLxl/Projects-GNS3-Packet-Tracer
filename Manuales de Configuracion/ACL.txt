@@ -1,0 +1,53 @@
+***ACL estandar***
+La lista de ACL estandar va de 1-99, 1300-1999
+
+*Recomendaciones*
+Es ideal guardar la configuracion y/o comandos que emitimos en un block de notas.
+
+*Crear ACL numerada*
+Router(config)# access-list *access-list-number* {deny | permit | remark text} source [source-wildcard] [log]
+
+*Tipos de accesos*
+# Ejemplo 1: Agregar un comentario (remark)
+Router(config)# access-list 10 remark Bloqueare la red de invitados
+
+# Ejemplo 2: Denegar un host específico (usa máscara 0.0.0.0 implícita)
+Router(config)# access-list 10 deny host 192.168.1.50
+
+# Ejemplo 3: Permitir una red completa con máscara wildcard y generar log
+Router(config)# access-list 10 permit 192.168.1.0 0.0.0.255 log
+
+# Ejemplo 4: Permitir cualquier tráfico (any)
+Router(config)# access-list 10 permit any
+
+*Asignar nombre a una lista*
+Router(config)# ip access-list standard *access-list-name*
+
+*Vincular ACL a interfaz*
+Router(config-if) # ip access-group {access-list-number | access-list-name} {in | out}
+
+*Añadir comentarios ACL*
+R1(config)# access-list 10 remark ACE permits ONLY host 192.168.10.10 to the internet
+
+*Eliminar instruccion ACL*
+R1# conf t
+R1(config)# ip access-list standard 1
+R1(config-std-nacl)# no 10
+R1(config-std-nacl)# 10 deny host 192.168.10.10
+R1(config-std-nacl)# end
+R1# show access-lists
+Standard IP access list 1
+    10 deny   192.168.10.10
+    20 permit 192.168.10.0, wildcard bits 0.0.0.255
+
+*Modificar ACL con nombre*
+R1# show access-lists
+Standard IP access list NO-ACCESS
+    10 deny   192.168.10.10
+    20 permit 192.168.10.0, wildcard bits 0.0.0.255
+
+*Ver ACL*
+R1# show access-lists
+
+***ACL extendidas***
+La lista de ACL extendida va de 100-199, 2000-2699

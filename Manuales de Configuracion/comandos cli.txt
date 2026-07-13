@@ -1,0 +1,105 @@
+Cracion VLAN 
+en
+conf t
+vlan 20
+name RR.HH
+vlan 20
+name Admin
+
+*No buscar dominio DNS*
+Router(config)# no ip domain-lookup
+
+/*Router poner ip a subinterfaz vlan*/
+interface fastEthernet 0/1.10		
+encapsulation dot 10
+ip address 192.168.109.1 255.255.255.0
+
+interface range fastethernet 0/1-24
+
+ip route <red_destino> <mascara_destino> <ip_proximo_salto_o_interfaz_salida>
+
+ip route 10.10.0.6 255.255.255.252 192.168.76.1
+
+*Comando para configurar RIP en cada router* 
+Ingresa a la interfaz de línea de comandos (CLI) de cada router y sigue estos pasos:
+Entra al modo de configuración global:
+enable
+configure terminal
+Inicia el proceso de RIP y usa la versión 2, que es más eficiente:
+
+router rip
+version 2
+
+copy running-config startup-config (privilegiado)
+
+*Habilitar ipv6*
+Primero habilitar ipv6: ipv6 unicast routing
+ipv6 enable
+
+Ipv6
+R1(config-if)#ipv6 address fe80::1 link-local (configurar gateway local ipv6)
+
+*Verificar version de cada interfaz*(privilegiado)
+sh interface AGREGAR INTERFAZ
+ipv6 add 2001:db8:acad:1::2/64
+
+*Desactivar la busqueda DNS, que ocurre cuando se escribe mal un comando*
+no ip domain-lookup
+
+*Agregar ip gateway switch*
+ip default-gateway
+
+*Para evitar que los mensajes de consola interrumpan los comandos,.*
+ use la opción logging synchronous (line console 0)
+
+*Ver las VLAN de cada interfaz SOLO SW*
+show interfaces status
+
+*Configurar modo duplex*
+Seleccionar interfaz
+duplex full (este es el modo)
+speed n (velocidad de la interfaz)
+
+*Configurar AUTO-MDIX*(SELECCIONAR LA INTERFAZ)
+mdix auto
+
+*Configuracion actual de inicio*privilegiado
+show running-config
+
+*Ver archivos flash*privilegiado
+show flash
+
+*Ver informacion de hardware y software*privi
+show version
+
+*Comandos usados recientemente*privi
+show history
+
+*Informacion IP de una interfaz*privi
+show ip interface INTERFAZ X
+show ipv6 interface INTERFAZ X
+
+*Ver tabla de direcciones MAC*privi
+show mac-address-table
+
+*Quitar mensaje al ejecutar x operacion y no hacer tab*
+logging synchronous
+
+*Ver interfaces Trunk*
+S1# show interfaces trunk
+Port Mode Encapsulation Status Native vlan
+Fa0/1 on 802.1q trunking 1
+Fa0/5 on 802.1q trunking 1
+Port Vlans allowed on trunk
+Fa0/1 1-4094
+Fa0/5 1-4094
+Port Vlans allowed and active in management domain
+Fa0/1 1,10,20,99
+Fa0/5 1,10,20,99
+Port Vlans in spanning tree forwarding state and not pruned
+Fa0/1 1,10,20,99
+Fa0/5 1,10,20,99
+S1#
+
+*Verificar contraseña/Verificar configuracion actual*
+show running-config

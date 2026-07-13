@@ -1,0 +1,60 @@
+*Hacer DHCP*
+RouterA(config)#ip dhcp pool VOICE #Create DHCP pool named VOICE
+RouterA(dhcp-config)#network 192.168.10.0 255.255.255.0 #DHCP network network 192.168.10 with /24 mask#
+RouterA(dhcp-config)#default-router 192.168.10.1 #The default router IP address#
+RouterA(dhcp-config)#option 150 ip 192.168.10.1 #Mandatory for voip configuration.
+
+*Configurar Servicio de telefonia Manager Express*
+RouterA(config)#telephony-service #Configuring the router for telephony services#
+RouterA(config-telephony)#max-dn 5 #Define the maximum number of directory numbers#
+RouterA(config-telephony)#max-ephones 5 #Define the maximum number of phones#
+RouterA(config-telephony)#ip source-address 192.168.10.1 port 2000 #IP Address source#
+RouterA(config-telephony)#auto assign 4 to 6 #Automatically assigning ext numbers to buttons#
+RouterA(config-telephony)#auto assign 1 to 5 #Automatically assigning ext numbers to buttons#
+
+*Configurar VLAN de voz*
+SwitchA(config)#interface range fa0/1 – 5 #Configure interface range#
+SwitchA(config-if-range)#switchport mode access
+SwitchA(config-if-range)#switchport voice vlan 1 #Define the VLAN on which voice packets will be handled#
+
+*Configurar directorio telefonico*
+RouterA(config)#ephone-dn 1 #Defining the first directory entry#
+RouterA(config-ephone-dn)#number 54001 #Assign the phone number to this entry#
+
+*Configurar telefonos*
+ephone 1
+ mac-address XXXX.XXXX.XXXX
+ type 7941
+ button 1:1
+
+ephone 2
+ mac-address XXXX.XXXX.XXXX
+ type 7941
+ button 1:2
+
+ephone 3
+ mac-address XXXX.XXXX.XXXX
+ type 7941
+ button 1:3
+
+ephone 4
+ mac-address XXXX.XXXX.XXXX
+ type 7941
+ button 1:4
+
+*Configurar VoIP para cruzar routers (Dial Peer)*
+No comprendido del toda, usar ia para configurar. Chequear ejercicio de telefonía IP.
+
+R1:
+dial-peer voice 10 voip
+ destination-pattern 00[7-9]
+ session target ipv4:172.16.100.14
+!
+dial-peer voice 11 voip
+ destination-pattern 01[0-2]
+ session target ipv4:172.16.100.14
+
+R2:
+dial-peer voice 20 voip
+ destination-pattern 00[1-6]
+ session target ipv4:172.16.100.13

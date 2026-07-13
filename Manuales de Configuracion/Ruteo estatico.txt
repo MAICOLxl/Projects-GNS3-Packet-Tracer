@@ -1,0 +1,73 @@
+*Nota importantes*
+Siempre se apunta a la ip que se quiere llegar 
+
+
+*Configurar una ruta estatica ipv4*
+Router(config)# ip route network-address subnet-mask { ip-address | exit-intf [ip-address]} [distance]
+
+*Configurar ruta estatica ipv6*
+Router(config)# ipv6 route ipv6-prefix/prefix-length {ipv6-address | exit-intf [ipv6-address]} [distance]
+
+*Configurar Ruta estatica ipv4 siguiente salto*
+R1(config)# ip route 172.16.1.0 255.255.255.0 172.16.2.2
+R1(config)# ip route 192.168.1.0 255.255.255.0 172.16.2.2
+R1(config)# ip route 192.168.2.0 255.255.255.0 172.16.2.2
+
+*Configurar ruta estatica ipv6 siguente salto*
+R1(config)# ipv6 unicast-routing
+R1(config)# ipv6 route 2001:db8:acad:1::/64 2001:db8:acad:2::2
+R1(config)# ipv6 route 2001:db8:cafe:1::/64 2001:db8:acad:2::2
+R1(config)# ipv6 route 2001:db8:cafe:2::/64 2001:db8:acad:2::2
+
+*Configurar Ruta estatica ipv4 conectada directamente*
+R1(config)# ip route 172.16.1.0 255.255.255.0 s0/1/0
+R1(config)# ip route 192.168.1.0 255.255.255.0 s0/1/0
+R1(config)# ip route 192.168.2.0 255.255.255.0 s0/1/0
+
+*Configurar Ruta estatica ipv6 conectada directamente*
+R1(config)# ipv6 route 2001:db8:acad:1::/64 s0/1/0
+R1(config)# ipv6 route 2001:db8:cafe:1::/64 s0/1/0
+R1(config)# ipv6 route 2001:db8:cafe:2::/64 s0/1/0
+
+*Configurar Ruta estatica ipv4 completamente especificada*
+R1(config)# ip route 172.16.1.0 255.255.255.0 GigabitEthernet 0/0/1 172.16.2.2
+R1(config)# ip route 192.168.1.0 255.255.255.0 GigabitEthernet 0/0/1 172.16.2.2
+R1(config)# ip route 192.168.2.0 255.255.255.0 GigabitEthernet 0/0/1 172.16.2.2
+
+*Configurar Ruta estatica ipv6 completamente especificada*
+R1(config)# ipv6 route 2001:db8:acad:1::/64 fe80::2
+%Interface has to be specified for a link-local nexthop
+R1(config)# ipv6 route 2001:db8:acad:1::/64 s0/1/0 fe80::2
+
+*Configurar ruta estatica flotante ipv4*
+R1(config)# ip route 0.0.0.0 0.0.0.0 172.16.2.2
+R1(config)# ip route 0.0.0.0 0.0.0.0 10.10.10.2 5
+ISP1(config)#ip route 192.168.11.32 255.255.255.224 10.10.10.5 5
+
+*Configurar ruta estatica flotante ipv6*
+R1(config)# ipv6 route ::/0 2001:db8:acad:2::2
+R1(config)# ipv6 route ::/0 2001:db8:feed:10::2 5
+
+*Ruta de host estatica ipv4*
+Branch(config)# ip route 209.165.200.238 255.255.255.255 198.51.100.2
+
+*Ruta de host estatica ipv6*
+Branch(config)# ipv6 route 2001:db8:acad:2::238/128 2001:db8:acad:1::2
+
+*Mostrar solo rutas estaticas ipv4*
+R1# show ip route static | begin Gateway
+
+*Mostrar ipv4 especifica*
+R1# show ip route 192.168.2.1
+
+*Configuracion ruta estatica ipv4*
+R1# show running-config | section ip route
+
+*Solo rutas estatica ipv6*
+R1# show ipv6 route static
+
+*Red ipv6 especifica*
+R1# show ipv6 route 2001:db8:cafe:2:: 
+
+*Configuracion de ruta estatica ipv6*
+R1# show running-config | section ipv6 route

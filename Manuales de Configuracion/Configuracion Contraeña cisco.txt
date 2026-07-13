@@ -1,0 +1,103 @@
+Habilitar contraseñas en cisco:
+
+EXEC con privilegios (global)
+enable password # (no cifrado)
+enable secret #
+picapapapapita
+
+EXEC usuario (global)
+line console 0
+password #
+login
+
+line vty 0 4 (global e interfaz seleccionada)
+password #
+login
+transport input {ssh | telnet}
+
+Encriptar contraseñas (global)
+service password-encryption
+
+Notificacion legal (global)
+banner motd "n" o #n#
+
+Descripcion en cada interfaz (global--->interfaz seleccionada)
+description MENSAJE
+
+
+
+
+Ej.
+
+Primer comando:
+
+Switch> enable
+
+Switch# configure terminal
+
+Switch(config)# enable secret o enable password [pongo contraseña]
+
+Switch(config)# exit
+
+Switch# disable
+
+ 
+
+ 
+
+ 
+
+Segundo comando:
+
+ 
+
+Switch> enable
+
+Switch# configure terminal
+
+Switch(config)# line con 0
+
+Switch(config-line)# password [pongo contraseña]
+
+Switch(config-line)# login
+
+Switch(config-line)# exit
+
+Switch(config)# exit
+
+Switch# disable
+
+
+
+ 
+
+ 
+
+ 
+
+Tercer comando:
+
+ 
+
+SW1>enable
+
+SW1# configure terminal
+
+SW1(config)# line vty 0 15
+
+SW1(config-line)# password [pongo contraseña]
+
+SW1(config-line)# login
+
+SW1(config-line)# exit
+
+***SOLUCIÓN****
+enable secret: lo usas para poder entrar en modo privilegiado, es decir pasar de > a #
+
+ 
+
+password en con: con es consola y sirve para que puedas entrar al equipo desde este puerto en especifico y cuando no tienes usuarios locales
+
+ 
+
+password en vty: se usa igual que el de consola, la diferencia es que vty es de session remota, esto es telnet, ssh o algun otro protocolo.

@@ -1,0 +1,97 @@
+*IMPORTANTE*
+Poner el ip helper en la subinterfaz de cada vlan.
+
+-Revisar si el DHCP esta encendido
+
+-Activar ospf en las sub inferfaces
+
+-Activar protocolo de ruteo: ip ospf 1 area 0
+
+Si tengo que conectar un servidor DHCP dedicado
+y el rango de IP esta en una subinterfaz
+
+
+ej: gig0/0.10, la comexion que tiene el switch con el
+servidor tiene que estar en modo acceso con la vlan
+que esta en ese rango.
+Tiene que estar asi porque el trafico que se envia a
+sub interfaces esta sin etiquetar.
+
+Si tengo una LAN con router que se conecta a otro
+router, ip helper debe ser la ip de la wan que hay
+entre esos intermediarios.
+
+*Adquirir ip en router por DHCP*
+ip address dhcp
+sh ip interface brief
+
+*Excluir direcciones IPv4*
+Router(config)# ip dhcp excluded-address low-address [high-address]
+R1(config)# ip dhcp excluded-address 192.168.10.1 192.168.10.9
+
+*Definir nombre del grupo DHCPv4*
+R1(config)# ip dhcp pool NOMBREGRUPO
+
+*Agregar conjunto de direcciones (OJO COMIENZA CON LA IP NETWORK)*
+R1(dhcp-config)# network 192.168.10.0 255.255.255.0
+
+*Definir router o gateway predeterminado*
+R1(dhcp-config)# default-router 192.168.10.1
+
+*Definir servidor DNS*
+R1(dhcp-config)# dns-server 192.168.11.5
+
+*Comunicar DHCP con equipos fuera de la red*
+R1(config-if)# ip helper-address 10.1.1.2
+
+*Definir dominio*
+R1(dhcp-config)# domain-name example.com
+
+*Definir la duracion de la concesion DHCP*
+router(dhcp-config)#lease DIAS HORAS MINUTOS
+
+*Habilitar DHCPv4 (Viene por defecto)*
+R1(config)# service dhcp
+
+*Deshabilitar el servidor DHCPv4*
+R1(config)# no service dhcp
+
+*Definir servidor WINS con NetBIOS/ OJO Microsoft recomienda no implementar WINS, en su lugar DNS*
+netbios-name-server address DIRECCION
+
+*Verificar los comandos asociados a la configuracion DHCPv4*
+R1# show running-config | section dhcp
+ip dhcp excluded-address 192.168.10.1 192.168.10.9
+ip dhcp excluded-address 192.168.10.254 
+ETC.....
+
+*Verificar asignaciones DHCP*
+R1# show ip dhcp binding
+Bindings from all pools not associated with VRF:
+IP address Client-ID/ Lease expiration Type State Interface
+
+*Verificar esdisticas DHCPv4*
+R1# show ip dhcp server statistics
+
+*Verificar direccionamiento IPv4 recibido del cliente DHCPv4*
+ipconfig /all 
+OBVIO EN COMMAND PROMPT
+
+vlan 10 en; R1,R4,R8
+
+Aunque use la misma vlan, cada router debe tener su
+propio rango.
+
+R1: 10.0.0.0 /24
+R4: 10.0.1.0 /24
+R8: 10.0.2.0 /24
+
+Despues en cada subinterfaz activar el protocolo de
+ruteo.
+
+in fast0/0.10
+ip ospf 1 area 0
+VERIFICAR EL SH IP RO
+
+Tener ip helper en el router del cliente.
+No es necesario en el router del servidor
